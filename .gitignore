@@ -1,0 +1,26 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.venv/
+*.egg-info/
+
+# Database
+*.db
+*.sqlite3
+
+# Data files (raw bank exports — never commit these)
+data/*.csv
+
+# Node / React
+node_modules/
+frontend/build/
+
+# OS
+.DS_Store
+Thumbs.db
+EOF
