@@ -23,4 +23,4 @@ frontend/build/
 # OS
 .DS_Store
 Thumbs.db
-EOF
+EOF.ipynb_checkpoints/
