@@ -1,4 +1,5 @@
 import os
+import anthropic
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
@@ -19,3 +20,10 @@ def get_engine():
         f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
     return engine
+
+def get_client():
+    """
+    Creates and returns Anthropic client using API key
+    """
+    return anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
