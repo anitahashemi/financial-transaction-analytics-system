@@ -24,3 +24,4 @@ frontend/build/
 .DS_Store
 Thumbs.db
 EOF.ipynb_checkpoints/
+*.csv

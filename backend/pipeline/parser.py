@@ -2,7 +2,6 @@ import pandas as pd
 import hashlib
 import re
 from pathlib import Path
-
 def load_raw(file_path):
     df = pd.read_csv(file_path, skiprows=1)
     return df
