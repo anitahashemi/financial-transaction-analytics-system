@@ -22,7 +22,7 @@ def health():
     """Check if the API is running."""
     return jsonify({"status": "ok"})
 
-@app.route("/upload", methods=["GET"])
+@app.route("/upload", methods=["POST"])
 def upload():
     """ Receives a BMO csv file, parses, inserts and categorizes transactions"""
 
@@ -38,7 +38,19 @@ def upload():
     temp_path = os.path.join("temp", file.filename)
     os.makedirs("temp", exist_ok=True)
     file.save(temp_path)
-    pass
+
+    # Running the full pipeline
+    df = parse_bmo_csv(temp_path)
+    records = df.to_dict(orient="records")
+    insert_transactions(records, engine)
+    categorize_all_pending(engine, client)
+
+    # Deleting temp file after processing the data
+    os.remove(temp_path)
+    return jsonify({
+        "message" : "Upload Successful",
+        "processed" : len(records)
+    }), 200
 
 @app.route("/transactions", methods=["GET"])
 def transactions():
