@@ -22,6 +22,24 @@ def health():
     """Check if the API is running."""
     return jsonify({"status": "ok"})
 
+@app.route("/upload", methods=["GET"])
+def upload():
+    """ Receives a BMO csv file, parses, inserts and categorizes transactions"""
+
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files["file"]
+    # Checking if the file is a csv
+    if not file.filename.endswith(".csv"):
+        return jsonify({"error": "File must be a CSV"}), 400
+
+    # saving the file temporarily so parser can read it
+    temp_path = os.path.join("temp", file.filename)
+    os.makedirs("temp", exist_ok=True)
+    file.save(temp_path)
+    pass
+
 @app.route("/transactions", methods=["GET"])
 def transactions():
     """Returns all transactions from the database"""
