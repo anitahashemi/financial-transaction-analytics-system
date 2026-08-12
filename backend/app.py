@@ -1,4 +1,5 @@
 import os
+from sqlalchemy import text
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from database import get_engine, get_client
@@ -55,12 +56,81 @@ def upload():
 @app.route("/transactions", methods=["GET"])
 def transactions():
     """Returns all transactions from the database"""
-    pass
+
+    start_date = request.args.get("start")
+    end_date = request.args.get("end")
+
+    if start_date and end_date:
+        query = text("""
+                SELECT id, transaction_type, date, amount, 
+                       description, transaction_code, category, created_at
+                FROM transactions
+                WHERE date BETWEEN :start AND :end
+                ORDER BY date DESC
+            """)
+        params = {"start": start_date, "end": end_date}
+    else:
+        query = text("""
+                SELECT id, transaction_type, date, amount,
+                       description, transaction_code, category, created_at
+                FROM transactions
+                ORDER BY date DESC
+            """)
+        params = {}
+
+    with engine.connect() as connection:
+        result = connection.execute(query, params)
+        rows = result.fetchall()
+        transactions_list = [dict(row._mapping) for row in rows]
+    return jsonify(transactions_list), 200
 
 @app.route("/analytics/summary", methods=["GET"])
 def get_summary():
     """Returns monthly income, spending and net savings"""
-    pass
+    start_date = request.args.get("start")
+    end_date = request.args.get("end")
+
+    if start_date and end_date:
+        date_filter = "WHERE date BETWEEN :start AND :end"
+        params = {"start": start_date, "end": end_date}
+    else:
+        date_filter = ""
+        params = {}
+
+    # First query => totals
+    totals_query = text(f"""
+            SELECT
+                SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) AS total_income,
+                SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END) AS total_spending,
+                SUM(amount) AS net_savings
+            FROM transactions
+            {date_filter}
+        """)
+
+    # Second query => spending by category
+    category_query = text(f"""
+        SELECT category, SUM(amount) AS total
+        FROM transactions
+        WHERE amount < 0
+        AND {f"date BETWEEN :start AND :end" if start_date and end_date else ""} 
+        GROUP BY category
+        ORDER BY total ASC
+        """)
+
+    with engine.connect() as connection:
+        # get totals
+        totals_result = connection.execute(totals_query, params)
+        totals_row = totals_result.fetchone()
+        summary = dict(totals_row._mapping)
+
+        # get by category
+        category_result = connection.execute(category_query, params)
+        by_category = {}
+        for row in category_result.fetchall():
+            by_category[row.category] = float(row.total) # Converting Decimal to float
+
+    summary["by_category"] = by_category
+    return jsonify(summary), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
