@@ -9,7 +9,7 @@ load_dotenv()
 CATEGORIES = [
     "Income", "Groceries", "Dining", "Coffee",
     "Transportation", "Shopping", "Subscriptions",
-    "Health & Wellness", "Transfer", "Other"
+    "Health & Wellness", "Transfer","Entertainment", "Other"
 ]
 
 SYSTEM_PROMPT = f"""You are a financial transaction categorizer for a Canadian personal finance app.
@@ -20,6 +20,8 @@ Transaction codes mean:
 - CW: cash withdrawal or e-transfer sent (likely Transfer)
 - PR: point of sale purchase (likely Shopping, Groceries, Dining, Coffee etc.)
 - OP: online purchase (likely Shopping, Subscriptions etc.)
+- DS: direct payment (likely Subscriptions or Bills)
+- RN: retail purchase (likely Shopping or Dining)
 
 Respond ONLY with a JSON object in this exact format: {{"category": "CategoryName"}}
 Choose from this exact list: {CATEGORIES}
@@ -27,18 +29,30 @@ Choose from this exact list: {CATEGORIES}
 Rules:
 - Return only valid JSON, no explanation, no markdown, no extra text
 - If uncertain, return "Other" — never return null
-- Canadian context: CRA deposits are Income, Compass card is Transportation
+- Focus on the merchant name at the START of the description, ignore store numbers and locations
 
 Canadian specific rules:
-- TLNK or TRANSLINK or COMPASS VENDING = Transportation
-- CRA or CANADA REVENUE = Income  
-- BC REVENUE or BC SERVICES = Health & Wellness
+- TLNK or TRANSLINK or COMPASS = Transportation
+- UBER or UBERTRIP = Transportation
+- CRA or CANADA REVENUE = Income
+- BC REVENUE or REVENUE SERVICES BC = Health & Wellness
 - TF followed by numbers = Transfer
+- INTERAC ETRNSFR = Transfer
+- BELL MOBILITY or TELUS or ROGERS or FIDO = Subscriptions
+- BELL MOBILITY or BELL MO = Subscriptions
+- BPY/FAC after a merchant name means it is a bill payment → Subscriptions
+- DYNAMITE or GARAGE or ARITZIA or LULULEMON = Shopping
+- CACTUS CLUB or GLOWBAL or MCDONALD or SUBWAY = Dining
+- CHARTWELLS or SFU = Dining
+- STARBUCKS or TIM HORTONS or BLENZ = Coffee
+- WALMART or SUPERSTORE or SAVE ON or SAFEWAY or FRESHCO = Groceries
+- SHOPPERS or LONDON DRUGS or PHARMASAVE = Health & Wellness
+- FLOWER or FLORAL or FLORIST = Shopping
+- BC LIQUOR or LIQUOR STORE or CINEPLEX or THEATRE or CINEMA = Entertainment
 
 Example:
 Input: [PR] TIM HORTONS VANCOUVER BC
-Output: {{"category": "Coffee"}}
-"""
+Output: {{"category": "Coffee"}}"""
 
 def categorize_transaction(description, transaction_code, client):
     """
@@ -60,6 +74,9 @@ def categorize_transaction(description, transaction_code, client):
 
     raw = response.content[0].text.strip()
 
+    # remove markdown code blocks if Claude adds them
+    raw = raw.replace("```json", "").replace("```", "").strip()
+
     try:
         parsed = json.loads(raw)
         category = parsed.get("category", "Other")
@@ -68,7 +85,6 @@ def categorize_transaction(description, transaction_code, client):
         return category
     except json.JSONDecodeError:
         return "Other"
-
 
 
 def categorize_all_pending(engine, client):
