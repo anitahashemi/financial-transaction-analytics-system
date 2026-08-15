@@ -112,7 +112,7 @@ def get_summary():
         SELECT category, SUM(amount) AS total
         FROM transactions
         WHERE amount < 0
-        AND {f"date BETWEEN :start AND :end" if start_date and end_date else ""} 
+        {f"AND date BETWEEN :start AND :end" if start_date and end_date else ""} 
         GROUP BY category
         ORDER BY total ASC
         """)
@@ -121,7 +121,11 @@ def get_summary():
         # get totals
         totals_result = connection.execute(totals_query, params)
         totals_row = totals_result.fetchone()
-        summary = dict(totals_row._mapping)
+        summary = {
+            "total_income": round(float(totals_row.total_income or 0), 2),
+            "total_spending": round(float(totals_row.total_spending or 0), 2),
+            "net_savings": round(float(totals_row.net_savings or 0), 2)
+        }
 
         # get by category
         category_result = connection.execute(category_query, params)

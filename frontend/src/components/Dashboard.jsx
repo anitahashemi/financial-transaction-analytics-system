@@ -61,7 +61,7 @@ function Dashboard() {
           cx="50%"
           cy="50%"
           outerRadius={150}
-          label
+          label={({ name, value }) => `${name}: $${value.toFixed(2)}`}
         >
             {categoryData.map((entry, index) => (
             <Cell key={index} fill={COLORS[index % COLORS.length]} />
