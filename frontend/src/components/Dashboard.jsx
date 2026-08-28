@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts"
+import { PieChart, Pie, Cell, Legend,
+         LineChart, Line, XAxis, YAxis,
+         CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 // color palette for pie chart slices
 const COLORS = [
@@ -12,6 +14,7 @@ const COLORS = [
 // Displays financial summary cards and spending breakdown chart
 function Dashboard({ startDate, endDate }) {
   const [summary, setSummary] = useState(null)
+  const [trends, setTrends] = useState(null)
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -27,7 +30,23 @@ function Dashboard({ startDate, endDate }) {
         console.error("Failed to fetch summary:", error)
       }
     }
+
+    const fetchTrends = async () => {
+      try {
+        const params = {}
+        if (startDate && endDate) {
+          params.start = startDate
+          params.end = endDate
+        }
+        const response = await axios.get("http://localhost:5000/analytics/trends", { params })
+        setTrends(response.data)
+      } catch (error) {
+        console.error("Failed to fetch trends:", error)
+      }
+    }
+
     fetchSummary()
+    fetchTrends()
 
   }, [startDate, endDate]) // re-fetch when dates change
 
@@ -75,6 +94,26 @@ function Dashboard({ startDate, endDate }) {
         <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
         <Legend />
       </PieChart>
+
+    {/* line chart — must be inside the main div */}
+      <h2>Monthly Spending Trend</h2>
+      {trends && (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={trends}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis tickFormatter={(value) => `$${Math.abs(value)}`} />
+            <Tooltip formatter={(value) => `$${Math.abs(value).toFixed(2)}`} />
+            <Line
+              type="monotone"
+              dataKey="total_spending"
+              stroke="#6366f1"
+              strokeWidth={2}
+              dot={true}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </div>
   )
 }
