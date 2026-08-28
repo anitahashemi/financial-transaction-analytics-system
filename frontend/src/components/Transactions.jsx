@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
-function Transactions(){
+function Transactions({ startDate, endDate }){
     const [ transactions, setTransactions ] = useState(null)
 
     useEffect( () => {
         const fetchTransactions = async() => {
             try{
-                const response = await axios.get("http://localhost:5000/transactions")
+                const params = {}
+                if (startDate && endDate) {
+                params.start = startDate
+                params.end = endDate
+                }
+                const response = await axios.get("http://localhost:5000/transactions", {params})
                 setTransactions(response.data)
             }catch (error){
                 console.error("Failed to fetch transactions: ", error)
@@ -15,7 +20,7 @@ function Transactions(){
         }
 
         fetchTransactions()
-        }, [])
+        }, [startDate, endDate]) // re-fetch when dates change
 
     if (!transactions) return <p>Loading transactions...</p>
 

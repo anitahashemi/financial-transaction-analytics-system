@@ -10,13 +10,18 @@ const COLORS = [
 ]
 
 // Displays financial summary cards and spending breakdown chart
-function Dashboard() {
+function Dashboard({ startDate, endDate }) {
   const [summary, setSummary] = useState(null)
 
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/analytics/summary")
+        const params = {}
+        if (startDate && endDate) {
+          params.start = startDate
+          params.end = endDate
+        }
+        const response = await axios.get("http://localhost:5000/analytics/summary", {params})
         setSummary(response.data)
       } catch (error) {
         console.error("Failed to fetch summary:", error)
@@ -24,7 +29,7 @@ function Dashboard() {
     }
     fetchSummary()
 
-  }, [])
+  }, [startDate, endDate]) // re-fetch when dates change
 
   if (!summary) return <p>Loading...</p>
 
