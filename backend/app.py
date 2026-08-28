@@ -136,6 +136,40 @@ def get_summary():
     summary["by_category"] = by_category
     return jsonify(summary), 200
 
+@app.route("/analytics/trends", methods=["GET"])
+def get_trends():
+    """Returns monthly spending totals for trend line chart."""
+
+    start_date = request.args.get("start")
+    end_date = request.args.get("end")
+
+    if start_date and end_date:
+        query = text("""
+                SELECT 
+                ROUND(SUM(amount)::numeric, 2) AS total_spending, 
+                TO_CHAR(date, 'YYYY-MM') AS month, date FROM transactions
+                WHERE amount < 0 AND date BETWEEN :start AND :end
+                GROUP BY month
+                ORDER BY month
+            """)
+        params = {"start":start_date, "end":end_date}
+    else:
+        query = text("""
+            SELECT 
+            ROUND(SUM(amount)::numeric, 2) AS total_spending,
+            TO_CHAR(date, 'YYYY-MM') AS month FROM transactions
+            WHERE amount < 0
+            GROUP BY TO_CHAR(date, 'YYYY-MM')
+            ORDER BY month
+        """)
+        params = {}
+
+    with engine.connect() as connection:
+        results = connection.execute(query, params)
+        trends = results.fetchall()
+        trends_list = [dict(trend._mapping) for trend in trends]
+    return jsonify(trends_list), 200
+
 if __name__ == "__main__":
     app.run(debug=True)
 
