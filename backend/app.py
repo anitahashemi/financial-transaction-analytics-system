@@ -142,25 +142,34 @@ def get_trends():
 
     start_date = request.args.get("start")
     end_date = request.args.get("end")
+    granularity = request.args.get("granularity", "monthly")  # default monthly
+
+    # choose date format based on granularity
+    if granularity == "daily":
+        date_format = "YYYY-MM-DD"
+        group_label = "day"
+    else:
+        date_format = "YYYY-MM"
+        group_label = "month"
 
     if start_date and end_date:
-        query = text("""
+        query = text(f"""
                 SELECT 
                 ROUND(SUM(amount)::numeric, 2) AS total_spending, 
-                TO_CHAR(date, 'YYYY-MM') AS month, date FROM transactions
+                TO_CHAR(date, '{date_format}') AS {group_label}, date FROM transactions
                 WHERE amount < 0 AND date BETWEEN :start AND :end
-                GROUP BY month
-                ORDER BY month
+                GROUP BY '{date_format}'
+                ORDER BY {group_label}
             """)
         params = {"start":start_date, "end":end_date}
     else:
-        query = text("""
+        query = text(f"""
             SELECT 
             ROUND(SUM(amount)::numeric, 2) AS total_spending,
-            TO_CHAR(date, 'YYYY-MM') AS month FROM transactions
+            TO_CHAR(date, '{date_format}') AS {group_label} FROM transactions
             WHERE amount < 0
-            GROUP BY TO_CHAR(date, 'YYYY-MM')
-            ORDER BY month
+            GROUP BY TO_CHAR(date, '{date_format}')
+            ORDER BY {group_label}
         """)
         params = {}
 

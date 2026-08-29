@@ -7,11 +7,13 @@ import Transactions from "./components/Transactions"
 function App() {
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
+  const [granularity, setGranularity] = useState("monthly")
 
   const handleFilterChange = (days) => { // receives 30, 60, 90, all
     if (days=="all"){
       setStartDate("")
       setEndDate("")
+      setGranularity("monthly")
       return
     }
     const end = new Date()
@@ -20,7 +22,16 @@ function App() {
 
     setStartDate(start.toISOString().split("T")[0])
     setEndDate(end.toISOString().split("T")[0])
+
+    // auto select granularity based on period
+    if (days <= 60) {
+      setGranularity("daily")
+    } else {
+      setGranularity("monthly")
+    }
   }
+
+
   return (
       <BrowserRouter>
         <div>
@@ -42,8 +53,10 @@ function App() {
 
           {/* page content */}
           <Routes>
-            <Route path="/" element={<Dashboard startDate={startDate} endDate={endDate}/>}/>
-            <Route path="/transactions" element={<Transactions startDate={startDate} endDate={endDate}/>}/>
+            <Route path="/" element=
+                {<Dashboard startDate={startDate} endDate={endDate} granularity={granularity}/>}/>
+            <Route path="/transactions" element=
+                {<Transactions startDate={startDate} endDate={endDate} granularity={granularity}/>}/>
           </Routes>
         </div>
       </BrowserRouter>

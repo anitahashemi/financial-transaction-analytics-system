@@ -12,7 +12,7 @@ const COLORS = [
 ]
 
 // Displays financial summary cards and spending breakdown chart
-function Dashboard({ startDate, endDate }) {
+function Dashboard({ startDate, endDate, granularity }) {
   const [summary, setSummary] = useState(null)
   const [trends, setTrends] = useState(null)
 
@@ -38,8 +38,12 @@ function Dashboard({ startDate, endDate }) {
           params.start = startDate
           params.end = endDate
         }
+        params.granularity = granularity || "monthly"
+
         const response = await axios.get("http://localhost:5000/analytics/trends", { params })
         setTrends(response.data)
+        console.log("trends data:", response.data)
+        console.log("granularity:", granularity)
       } catch (error) {
         console.error("Failed to fetch trends:", error)
       }
@@ -48,7 +52,7 @@ function Dashboard({ startDate, endDate }) {
     fetchSummary()
     fetchTrends()
 
-  }, [startDate, endDate]) // re-fetch when dates change
+  }, [startDate, endDate, granularity]) // re-fetch when dates change
 
   if (!summary) return <p>Loading...</p>
 
@@ -95,13 +99,13 @@ function Dashboard({ startDate, endDate }) {
         <Legend />
       </PieChart>
 
-    {/* line chart — must be inside the main div */}
+      {/* Line Chart */}
       <h2>Monthly Spending Trend</h2>
       {trends && (
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={trends}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
+            <XAxis dataKey={granularity === "daily" ? "day" : "month"} />
             <YAxis tickFormatter={(value) => `$${Math.abs(value)}`} />
             <Tooltip formatter={(value) => `$${Math.abs(value).toFixed(2)}`} />
             <Line
