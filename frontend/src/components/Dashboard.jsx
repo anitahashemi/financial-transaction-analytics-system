@@ -4,14 +4,12 @@ import { PieChart, Pie, Cell, Legend,
          LineChart, Line, XAxis, YAxis,
          CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
-// color palette for pie chart slices
 const COLORS = [
   "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e",
   "#f97316", "#eab308", "#22c55e", "#14b8a6",
   "#3b82f6", "#a855f7"
 ]
 
-// Displays financial summary cards and spending breakdown chart
 function Dashboard({ startDate, endDate, granularity }) {
   const [summary, setSummary] = useState(null)
   const [trends, setTrends] = useState(null)
@@ -24,7 +22,7 @@ function Dashboard({ startDate, endDate, granularity }) {
           params.start = startDate
           params.end = endDate
         }
-        const response = await axios.get("http://localhost:5000/analytics/summary", {params})
+        const response = await axios.get("http://localhost:5000/analytics/summary", { params })
         setSummary(response.data)
       } catch (error) {
         console.error("Failed to fetch summary:", error)
@@ -39,11 +37,8 @@ function Dashboard({ startDate, endDate, granularity }) {
           params.end = endDate
         }
         params.granularity = granularity || "monthly"
-
         const response = await axios.get("http://localhost:5000/analytics/trends", { params })
         setTrends(response.data)
-        console.log("trends data:", response.data)
-        console.log("granularity:", granularity)
       } catch (error) {
         console.error("Failed to fetch trends:", error)
       }
@@ -51,73 +46,130 @@ function Dashboard({ startDate, endDate, granularity }) {
 
     fetchSummary()
     fetchTrends()
+  }, [startDate, endDate, granularity])
 
-  }, [startDate, endDate, granularity]) // re-fetch when dates change
+  if (!summary) return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-gray-400 text-lg">Loading...</p>
+    </div>
+  )
 
-  if (!summary) return <p>Loading...</p>
-
-  // converting by_category object into array Recharts expects
   const categoryData = Object.entries(summary.by_category).map(([name, value]) => ({
     name,
-    value: Math.abs(value)  // convert negative spending to positive for chart
+    value: Math.abs(value)
   }))
 
   return (
-    <div>
+    <div className="space-y-8">
+
       {/* summary cards */}
-      <div>
-        <div>
-          <h3>Total Income</h3>
-          <p>${summary.total_income?.toFixed(2)}</p>
+      <div className="grid grid-cols-3 gap-6">
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-emerald-500">
+          <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">
+            Total Income
+          </p>
+          <p className="text-3xl font-bold text-emerald-400">
+            ${summary.total_income?.toFixed(2)}
+          </p>
         </div>
-        <div>
-          <h3>Total Spending</h3>
-          <p>${Math.abs(summary.total_spending)?.toFixed(2)}</p>
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-rose-500">
+          <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">
+            Total Spending
+          </p>
+          <p className="text-3xl font-bold text-rose-400">
+            ${Math.abs(summary.total_spending)?.toFixed(2)}
+          </p>
         </div>
-        <div>
-          <h3>Net Savings</h3>
-          <p>${summary.net_savings?.toFixed(2)}</p>
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-indigo-500">
+          <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">
+            Net Savings
+          </p>
+          <p className={`text-3xl font-bold ${summary.net_savings >= 0 ? "text-indigo-400" : "text-rose-400"}`}>
+            ${summary.net_savings?.toFixed(2)}
+          </p>
         </div>
       </div>
-      {/* spending by category pie chart */}
-      <h2>Spending by Category</h2>
-      <PieChart width={500} height={400}>
-        <Pie
-          data={categoryData}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={150}
-          label={({ name, value }) => `${name}: $${value.toFixed(2)}`}
-        >
-            {categoryData.map((entry, index) => (
-            <Cell key={index} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
-        <Legend />
-      </PieChart>
 
-      {/* Line Chart */}
-      <h2>Monthly Spending Trend</h2>
-      {trends && (
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={trends}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={granularity === "daily" ? "day" : "month"} />
-            <YAxis tickFormatter={(value) => `$${Math.abs(value)}`} />
-            <Tooltip formatter={(value) => `$${Math.abs(value).toFixed(2)}`} />
-            <Line
-              type="monotone"
-              dataKey="total_spending"
-              stroke="#6366f1"
-              strokeWidth={2}
-              dot={true}
+      {/* charts row */}
+      <div className="grid grid-cols-2 gap-6">
+
+        {/* pie chart */}
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+          <h2 className="text-lg font-semibold text-white mb-6">
+            Spending by Category
+          </h2>
+          <PieChart width={420} height={350}>
+            <Pie
+              data={categoryData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={120}
+
+            >
+              {categoryData.map((entry, index) => (
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={(value) => `$${value.toFixed(2)}`}
+              contentStyle={{
+                backgroundColor: "#1f2937",
+                border: "1px solid #374151",
+                borderRadius: "8px",
+                color: "#fff"
+              }}
             />
-          </LineChart>
-        </ResponsiveContainer>
-      )}
+            <Legend />
+          </PieChart>
+        </div>
+
+        {/* line chart */}
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+          <h2 className="text-lg font-semibold text-white mb-6">
+            {granularity === "daily" ? "Daily" : "Monthly"} Spending Trend
+          </h2>
+          {trends && trends.length > 0 ? (
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart data={trends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis
+                  dataKey={granularity === "daily" ? "day" : "month"}
+                  stroke="#9ca3af"
+                  tick={{ fill: "#9ca3af", fontSize: 12 }}
+                />
+                <YAxis
+                  tickFormatter={(value) => `$${Math.abs(value)}`}
+                  stroke="#9ca3af"
+                  tick={{ fill: "#9ca3af", fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(value) => `$${Math.abs(value).toFixed(2)}`}
+                  contentStyle={{
+                    backgroundColor: "#1f2937",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    color: "#fff"
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="total_spending"
+                  stroke="#6366f1"
+                  strokeWidth={2}
+                  dot={{ fill: "#6366f1", r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-gray-500">No data for selected period</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
