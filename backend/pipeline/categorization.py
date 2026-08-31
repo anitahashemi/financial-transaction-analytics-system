@@ -9,7 +9,7 @@ load_dotenv()
 CATEGORIES = [
     "Income", "Groceries", "Dining", "Coffee",
     "Transportation", "Shopping", "Subscriptions",
-    "Health & Wellness", "Transfer","Entertainment", "Other"
+    "Health & Wellness", "Transfer","Entertainment", "Savings & Investments", "Other"
 ]
 
 SYSTEM_PROMPT = f"""You are a financial transaction categorizer for a Canadian personal finance app.
@@ -49,6 +49,8 @@ Canadian specific rules:
 - SHOPPERS or LONDON DRUGS or PHARMASAVE = Health & Wellness
 - FLOWER or FLORAL or FLORIST = Shopping
 - BC LIQUOR or LIQUOR STORE or CINEPLEX or THEATRE or CINEMA = Entertainment
+- TF 0607#8728-461 = Savings & Investments
+- INVESTORLINE or BMO IL = Savings & Investments
 
 Example:
 Input: [PR] TIM HORTONS VANCOUVER BC
