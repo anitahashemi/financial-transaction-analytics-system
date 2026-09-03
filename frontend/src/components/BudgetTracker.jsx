@@ -39,11 +39,19 @@ function BudgetTracker({ startDate, endDate }) {
         params.end = endDate
       }
       const response = await axios.get("http://localhost:5000/budgets", { params })
-      setBudgets(response.data)
+
+      // ensuring numbers and dates are floats and not strings
+      const data = response.data.map(b => ({
+      ...b,
+      budget: parseFloat(b.budget),
+      spent: parseFloat(b.spent)
+      }))
+
+      setBudgets(data)
 
       // initialize edit values from current budgets
       const values = {}
-      response.data.forEach(b => {
+      data.forEach(b => {
         values[b.category] = b.budget
       })
       setEditValues(values)

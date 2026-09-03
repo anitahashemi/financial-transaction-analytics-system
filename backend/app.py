@@ -195,7 +195,7 @@ def get_budget():
         params = {}
 
     query = text(f"""
-    SELECT b.category, b.amount,
+    SELECT b.category, b.amount AS budget,
     ROUND(COALESCE(SUM(ABS(t.amount)), 0)::numeric, 2) as spent 
     FROM budgets b
     LEFT JOIN transactions t

@@ -169,11 +169,10 @@ function Dashboard({ startDate, endDate, granularity }) {
               <p className="text-gray-500">No data for selected period</p>
             </div>
           )}
-
-          {/* budget tracker */}
-          <BudgetTracker startDate={startDate} endDate={endDate} />
         </div>
       </div>
+      {/* budget tracker */}
+      <BudgetTracker startDate={startDate} endDate={endDate} />
     </div>
   )
 }
