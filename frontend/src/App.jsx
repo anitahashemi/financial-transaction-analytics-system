@@ -45,14 +45,14 @@ function App() {
         {/* navbar */}
         <nav className="bg-gray-900 border-b border-gray-800 px-8 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-white tracking-tight">
-            <span className="text-emerald-400">Ana</span>lytics
+            <span className="text-[#4E9A6F]">Ana</span>lytics
           </h1>
           <div className="flex items-center gap-6">
             <NavLink
                 to="/"
                 className={({isActive}) =>
                     isActive
-                        ? "text-indigo-400 font-semibold border-b-2 border-indigo-400 pb-1"
+                        ? "text-[#4E9A6F] font-semibold border-b-2 border-[#4E9A6F] pb-1"
                         : "text-gray-400 hover:text-white transition-colors"
                 }
             >
@@ -62,7 +62,7 @@ function App() {
                 to="/transactions"
                 className={({isActive}) =>
                     isActive
-                        ? "text-indigo-400 font-semibold border-b-2 border-indigo-400 pb-1"
+                        ? "text-[#4E9A6F] font-semibold border-b-2 border-[#4E9A6F] pb-1"
                         : "text-gray-400 hover:text-white transition-colors"
                 }
             >
@@ -80,7 +80,7 @@ function App() {
               key={label}
               onClick={() => handleFilterChange(days)}
               className="px-4 py-1.5 rounded-full text-sm font-medium
-                         bg-gray-800 text-gray-300 hover:bg-indigo-600
+                         bg-gray-800 text-gray-300 hover:bg-[#4E9A6F]
                          hover:text-white transition-all duration-200"
             >
               {label}

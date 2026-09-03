@@ -70,7 +70,7 @@ function Transactions({ startDate, endDate }) {
                                     ${Math.abs(transaction.amount).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-indigo-300 border border-gray-700">
+                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-[#4E9A6F] border border-gray-700">
                                         {transaction.category}
                                     </span>
                                 </td>

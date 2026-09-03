@@ -6,9 +6,9 @@ import { PieChart, Pie, Cell, Legend,
          CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 const COLORS = [
-  "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e",
-  "#f97316", "#eab308", "#22c55e", "#14b8a6",
-  "#3b82f6", "#a855f7"
+  "#6366f1", "#8b5cf6", "#E2979C", "#4E9A6F",
+  "#f97316", "#E5B842", "#22c55e", "#14b8a6",
+  "#3b82f6", "#F67292"
 ]
 
 function Dashboard({ startDate, endDate, granularity }) {
@@ -65,27 +65,27 @@ function Dashboard({ startDate, endDate, granularity }) {
 
       {/* summary cards */}
       <div className="grid grid-cols-3 gap-6">
-        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-emerald-500">
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-green-600">
           <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">
             Total Income
           </p>
-          <p className="text-3xl font-bold text-emerald-400">
+          <p className="text-3xl font-bold text-green-600">
             ${summary.total_income?.toFixed(2)}
           </p>
         </div>
-        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-rose-500">
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-amber-500">
           <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">
             Total Spending
           </p>
-          <p className="text-3xl font-bold text-rose-400">
+          <p className="text-3xl font-bold text-amber-400">
             ${Math.abs(summary.total_spending)?.toFixed(2)}
           </p>
         </div>
-        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-indigo-500">
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 border-t-2 border-t-teal-700">
           <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">
             Net Savings
           </p>
-          <p className={`text-3xl font-bold ${summary.net_savings >= 0 ? "text-indigo-400" : "text-rose-400"}`}>
+          <p className={`text-3xl font-bold ${summary.net_savings >= 0 ? "text-teal-700" : "text-rose-400"}`}>
             ${summary.net_savings?.toFixed(2)}
           </p>
         </div>
@@ -95,7 +95,7 @@ function Dashboard({ startDate, endDate, granularity }) {
       <div className="grid grid-cols-2 gap-6">
 
         {/* pie chart */}
-        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-900">
           <h2 className="text-lg font-semibold text-white mb-6">
             Spending by Category
           </h2>
@@ -117,7 +117,7 @@ function Dashboard({ startDate, endDate, granularity }) {
               formatter={(value) => `$${value.toFixed(2)}`}
               contentStyle={{
                 backgroundColor: "#1f2937",
-                border: "1px solid #374151",
+                border: "1px solid #4E9A6F",
                 borderRadius: "8px",
                 color: "#fff"
               }}
@@ -127,7 +127,7 @@ function Dashboard({ startDate, endDate, granularity }) {
         </div>
 
         {/* line chart */}
-        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+        <div className="bg-gray-900 rounded-2xl p-6 border border-gray-900">
           <h2 className="text-lg font-semibold text-white mb-6">
             {granularity === "daily" ? "Daily" : "Monthly"} Spending Trend
           </h2>
@@ -157,9 +157,9 @@ function Dashboard({ startDate, endDate, granularity }) {
                 <Line
                   type="monotone"
                   dataKey="total_spending"
-                  stroke="#6366f1"
+                  stroke="#4E9A6F"
                   strokeWidth={2}
-                  dot={{ fill: "#6366f1", r: 4 }}
+                  dot={{ fill: "#4E9A6F", r: 4 }}
                   activeDot={{ r: 6 }}
                 />
               </LineChart>

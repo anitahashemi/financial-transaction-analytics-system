@@ -11,14 +11,14 @@ const CATEGORIES = [
 // Returns color based on spending vs budget ratio
 function getProgressColor(spent, budget) {
   const ratio = spent / budget
-  if (ratio >= 1) return "bg-rose-500"
+  if (ratio >= 1) return "bg-[#F67292]"
   if (ratio >= 0.8) return "bg-yellow-500"
   return "bg-emerald-500"
 }
 
 function getStatusText(spent, budget) {
   const ratio = spent / budget
-  if (ratio >= 1) return { text: "Over budget", color: "text-rose-400" }
+  if (ratio >= 1) return { text: "Over budget", color: "text-[#F67292]" }
   if (ratio >= 0.8) return { text: "Near limit", color: "text-yellow-400" }
   return { text: "On track", color: "text-emerald-400" }
 }
@@ -102,7 +102,7 @@ function BudgetTracker({ startDate, endDate }) {
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-900">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-white">Budget Tracker</h2>
         <div className="flex items-center gap-3">
@@ -122,7 +122,7 @@ function BudgetTracker({ startDate, endDate }) {
                 onClick={handleSave}
                 disabled={saving}
                 className="px-4 py-2 rounded-xl text-sm font-medium
-                           bg-emerald-600 hover:bg-emerald-500
+                           bg-[#4E9A6F] hover:bg-green-700
                            text-white transition-colors"
               >
                 {saving ? "Saving..." : "Save Budgets"}
