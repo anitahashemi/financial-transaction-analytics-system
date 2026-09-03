@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import BudgetTracker from "./BudgetTracker"
 import axios from "axios"
 import { PieChart, Pie, Cell, Legend,
          LineChart, Line, XAxis, YAxis,
@@ -168,6 +169,9 @@ function Dashboard({ startDate, endDate, granularity }) {
               <p className="text-gray-500">No data for selected period</p>
             </div>
           )}
+
+          {/* budget tracker */}
+          <BudgetTracker startDate={startDate} endDate={endDate} />
         </div>
       </div>
     </div>

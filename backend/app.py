@@ -3,13 +3,13 @@ from sqlalchemy import text
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from database import get_engine, get_client
-from models.transaction import create_tables
+from models.transaction import create_tables, create_budget_table
 from pipeline.parser import parse_bmo_csv
 from pipeline.ingestion import insert_transactions
 from pipeline.categorization import categorize_all_pending
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}})
 
 # Initializing database and client
 engine = get_engine()
@@ -17,6 +17,7 @@ client = get_client()
 
 # Creating tables if they don't exist
 create_tables(engine)
+create_budget_table(engine)
 # -------------------- routes -------------------------
 @app.route("/health", methods=["GET"])
 def health():
@@ -178,6 +179,61 @@ def get_trends():
         trends = results.fetchall()
         trends_list = [dict(trend._mapping) for trend in trends]
     return jsonify(trends_list), 200
+
+# Two flask endpoints for bedget
+@app.route("/budgets", methods=["GET"])
+def get_budget():
+    """Returns all budgets with current spendings"""
+    start_date = request.args.get("start")
+    end_date = request.args.get("end")
+
+    if start_date and end_date:
+        date_filter = "AND t.date BETWEEN :start AND :end"
+        params = {"start": start_date, "end": end_date}
+    else:
+        date_filter = ""
+        params = {}
+
+    query = text(f"""
+    SELECT b.category, b.amount,
+    ROUND(COALESCE(SUM(ABS(t.amount)), 0)::numeric, 2) as spent 
+    FROM budgets b
+    LEFT JOIN transactions t
+    ON b.category = t.category 
+    AND t.amount < 0
+    {date_filter}
+    GROUP BY b.category, b.amount
+    ORDER BY  b.category
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query, params)
+        budgets = [dict(row._mapping) for row in result.fetchall()]
+
+    return jsonify(budgets), 200
+
+@app.route("/budgets", methods=["POST"])
+def set_budgets():
+    """Creates or udpdates budgets for a category"""
+    data = request.get_json()
+    amount = data.get("amount")
+    category = data.get("category")
+
+    if not category or not amount:
+        return jsonify({"error": "category and amount required"}), 400
+
+    query = text("""
+    INSERT INTO budgets (category, amount)
+    VALUES (:category, :amount)
+    ON CONFLICT (category)
+    DO UPDATE SET amount = :amount
+    """)
+
+    with engine.connect() as connection:
+        connection.execute(query, {"category": category, "amount": amount})
+        connection.commit()
+
+    return jsonify({"message": f"Budget set for {category}"}), 200
 
 if __name__ == "__main__":
     app.run(debug=True)

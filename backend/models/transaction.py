@@ -18,3 +18,16 @@ def create_tables(engine):
         """))
         connection.commit()
         print("Tables created successfully")
+
+def create_budget_table(engine):
+    """Creates budget table if it doesn't exist"""
+    with engine.connect() as connection:
+        connection.execute(text("""
+        CREATE TABLE IF NOT EXISTS budgets (
+            category  TEXT PRIMARY KEY,
+            amount    FLOAT NOT NULL,
+            created_at TIMESTAMP DEFAULT NOW()
+            );
+        """))
+        connection.commit()
+        print("Budgets table created successfully")
