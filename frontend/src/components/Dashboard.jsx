@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import Chatbot from "./Chatbot"
 import BudgetTracker from "./BudgetTracker"
 import axios from "axios"
 import { PieChart, Pie, Cell, Legend,
@@ -173,6 +174,9 @@ function Dashboard({ startDate, endDate, granularity }) {
       </div>
       {/* budget tracker */}
       <BudgetTracker startDate={startDate} endDate={endDate} />
+
+      {/* AI financial assistant */}
+      <Chatbot startDate={startDate} endDate={endDate} />
     </div>
   )
 }
