@@ -7,6 +7,7 @@ from models.transaction import create_tables, create_budget_table
 from pipeline.parser import parse_bmo_csv
 from pipeline.ingestion import insert_transactions
 from pipeline.categorization import categorize_all_pending
+from pipeline.chatbot import get_chat_response
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}})
@@ -18,6 +19,9 @@ client = get_client()
 # Creating tables if they don't exist
 create_tables(engine)
 create_budget_table(engine)
+
+# Storing conversation history for chatbot
+conversation_histories = {}
 # -------------------- routes -------------------------
 @app.route("/health", methods=["GET"])
 def health():
@@ -234,6 +238,35 @@ def set_budgets():
         connection.commit()
 
     return jsonify({"message": f"Budget set for {category}"}), 200
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    """Receives a user message and returns Claude's response with financial context."""
+    data = request.get_json()
+    message = data.get("message")
+    session_id = data.get("session_id", "default")
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+
+    if not message:
+        return jsonify({"error": "message required"}), 400
+
+    if session_id not in conversation_histories:
+        conversation_histories[session_id] = []
+
+    response, updated_history = get_chat_response(
+        message=message,
+        conversation_history=conversation_histories[session_id],
+        engine=engine,
+        client=client,
+        start_date=start_date,
+        end_date=end_date
+    )
+
+    conversation_histories[session_id] = updated_history
+    return jsonify({"response": response}), 200
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
