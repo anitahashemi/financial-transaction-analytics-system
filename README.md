@@ -1,102 +1,51 @@
 # Financial Transaction Analytics System
 
-A full-stack personal finance web application that transforms raw BMO bank transaction data into meaningful financial insights and visualizations.
+A web application that takes in bank transaction CSV files and provides detailed analytics on spending and income.
 
-## Overview 
-
-User upload BMO CSV exports and the system automatically processes transactions through a multi-stage pipeline — cleaning, deduplicating, AI-categorizing, and storing them persistently in PostgreSQL. An interactive React dashboard surfaces spending patterns, category breakdowns, and monthly trends.
-
-## Features
-
-- **Automated data ingestion** -> parses and cleans raw BMO CSV exports
-- **SHA-256 fingerprint deduplication** -> prevents duplicate transactions across uploads
-- **AI categorization** -> integrates Claude API to automatically categorize transactions into spending categories using prompt engineering with Canadian banking context
-- **PostgreSQL persistence** -> accumulates months of transaction history across sessions
-- **REST API** -> Flask backend with endpoints for upload, transactions, and analytics
-- **Interactive dashboard** -> spending breakdown, monthly trend chart, and summary cards
-- **Date range filtering** -> filter all visualizations by 30, 60, 90 days, last year, or all time
-- **Dynamic granularity** -> trend chart automatically switches between daily and monthly view
-
+I realized I'd lost track of my spending and transactions. Going into online banking and looking through my transaction history wasn't giving me enough context on where my money was actually going. I wanted a system designed specifically for the bank I use and adjusted to my own spending habits and categories. That's where I started building this.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Python, Flask, SQLAlchemy |
-| Database | PostgreSQL |
-| AI Categorization | Anthropic Claude API (claude-haiku-4-5-20251001) |
-| Data Processing | pandas, hashlib |
-| Frontend | React, Vite, Recharts |
-| Styling | Tailwind CSS |
+**Backend:** Python, Flask, SQLAlchemy, pandas  
+**Database:** PostgreSQL  
+**Frontend:** React, JavaScript, CSS, Recharts  
+**AI:** Claude API  
 
+## Main Features
 
-## API Endpoints
+**Data Ingestion:** Cleans and processes raw BMO CSV files containing transaction data.
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /health | API health check |
-| POST | /upload | Upload BMO CSV and trigger pipeline |
-| GET | /transactions | Fetch transactions with optional date filter |
-| GET | /analytics/summary | Income, spending, savings, by category |
-| GET | /analytics/trends | Monthly or daily spending trends |
+**SHA-256 Fingerprint Deduplication:** Generates a fingerprint for each transaction to prevent duplicate entries when an uploaded CSV contains transactions that are already in the database.
 
+**AI Categorization:** Uses the Claude API to categorize transactions into spending categories using a prompt designed around Canadian banking data and my transaction patterns.
 
-## Setup
+**Data Storage:** Stores processed transactions and their assigned categories in PostgreSQL using SQLAlchemy.
 
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- PostgreSQL 14+
+**REST API:** Flask endpoints handle CSV uploads, transactions, analytics, budgets, and chatbot requests.
 
-### Backend setup
+**Interactive Dashboard:** Breaks down spending and income using horizontal category charts, spending trends, and financial summaries.
+
+**Date Range Filtering:** Filters analytics by the last 30, 60, 90 days, one year, or all time. Spending trends automatically switch between daily and monthly aggregation depending on the selected time range.
+
+**Budget Tracking:** Stores category-based budgets in a separate `budgets` table. When the dashboard loads, Flask joins budget and transaction data to compare each category's spending against its budget and classify it as within budget, near its limit, or over budget.
+
+**Financial Assistant:** Uses Claude with context retrieved from the database, including overall spending, category breakdowns, monthly spending, top transactions, and conversation history. This allows the assistant to answer questions using the user's actual financial data.
+
+## Running the Project
+
+### Backend
+
 ```bash
-cd backend
-pip install -r requirements.txt
+python backend/app.py
 ```
 
-Create a `.env` file in `backend/`:
-DB_HOST=localhost
-DB_PORT=PORT
-DB_NAME=financial_analytics
-DB_USER=postgres
-DB_PASSWORD=your_password
-ANTHROPIC_API_KEY=your_key
+### Frontend
 
-Run Flask:
-```bash
-python app.py
-```
-
-### Frontend setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## Data Pipeline
-BMO CSV upload
-↓
-Parse and clean (pandas)
-↓
-SHA-256 fingerprint deduplication
-↓
-Insert into PostgreSQL
-↓
-Claude API categorization
-↓
-React dashboard visualization
-
 ## Notebooks
-
-Exploratory notebooks in `/notebooks` document the development process:
-- CSV parsing and cleaning exploration
-- Database setup and testing
-- Categorization prompt engineering and accuracy testing
-
-## Future Improvements
-
-- Docker containerization for portable deployment
-- AI-powered chatbot for natural language financial queries
-- Rent and Savings & Investments category support
-- Support for additional Canadian banks
+Exploratory notebooks in `/Notebooks` document the development process. Data exploration, CSV cleaning, database setup and testing, and the transaction categorization prompt were developed and tested there before being moved into the main application.
