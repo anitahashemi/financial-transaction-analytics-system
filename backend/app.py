@@ -161,9 +161,9 @@ def get_trends():
         query = text(f"""
                 SELECT 
                 ROUND(SUM(amount)::numeric, 2) AS total_spending, 
-                TO_CHAR(date, '{date_format}') AS {group_label}, date FROM transactions
+                TO_CHAR(date, '{date_format}') AS {group_label} FROM transactions
                 WHERE amount < 0 AND date BETWEEN :start AND :end
-                GROUP BY '{date_format}'
+                GROUP BY TO_CHAR(date, '{date_format}')
                 ORDER BY {group_label}
             """)
         params = {"start":start_date, "end":end_date}
