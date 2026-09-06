@@ -11,16 +11,16 @@ const CATEGORIES = [
 // Returns color based on spending vs budget ratio
 function getProgressColor(spent, budget) {
   const ratio = spent / budget
-  if (ratio >= 1) return "bg-[#F67292]"
-  if (ratio >= 0.8) return "bg-yellow-500"
-  return "bg-emerald-500"
+  if (ratio >= 1) return "bg-[#B97872]"
+  if (ratio >= 0.8) return "bg-[#D8D0B8]"
+  return "bg-[#527D5D]"
 }
 
 function getStatusText(spent, budget) {
   const ratio = spent / budget
-  if (ratio >= 1) return { text: "Over budget", color: "text-[#F67292]" }
-  if (ratio >= 0.8) return { text: "Near limit", color: "text-yellow-400" }
-  return { text: "On track", color: "text-emerald-400" }
+  if (ratio >= 1) return { text: "Over budget", color: "text-[#B97872]" }
+  if (ratio >= 0.8) return { text: "Near limit", color: "text-[#D8D0B8]" }
+  return { text: "On track", color: "text-[#527D5D]" }
 }
 
 function BudgetTracker({ startDate, endDate }) {
@@ -102,38 +102,34 @@ function BudgetTracker({ startDate, endDate }) {
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-900">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">Budget Tracker</h2>
+    <div>
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           {message && (
-            <span className="text-sm text-emerald-400">{message}</span>
+            <span className="text-xs text-emerald-400 uppercase tracking-widest">{message}</span>
           )}
+        </div>
+        <div className="flex items-center gap-6">
           {editing ? (
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               <button
                 onClick={() => setEditing(false)}
-                className="px-4 py-2 rounded-xl text-sm text-gray-400
-                           hover:text-white transition-colors"
+                className="text-xs text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 rounded-xl text-sm font-medium
-                           bg-[#4E9A6F] hover:bg-green-700
-                           text-white transition-colors"
+                className="text-xs text-emerald-400 hover:text-emerald-300 uppercase tracking-widest transition-colors"
               >
-                {saving ? "Saving..." : "Save Budgets"}
+                {saving ? "Saving..." : "Save"}
               </button>
             </div>
           ) : (
             <button
               onClick={handleEditClick}
-              className="px-4 py-2 rounded-xl text-sm font-medium
-                         bg-gray-800 hover:bg-gray-700 text-gray-300
-                         hover:text-white transition-colors border border-gray-700"
+              className="text-xs text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
             >
               Edit Budgets
             </button>
@@ -142,25 +138,22 @@ function BudgetTracker({ startDate, endDate }) {
       </div>
 
       {budgets.length === 0 && !editing ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500 mb-3">No budgets set yet</p>
+        <div className="py-8">
+          <p className="text-xs text-gray-600 uppercase tracking-widest mb-4">No budgets set yet</p>
           <button
             onClick={handleEditClick}
-            className="px-4 py-2 rounded-xl text-sm font-medium
-                       bg-emerald-600 hover:bg-emerald-500 text-white"
+            className="text-xs text-emerald-400 hover:text-emerald-300 uppercase tracking-widest transition-colors"
           >
-            Set up budgets
+            Set up budgets →
           </button>
         </div>
       ) : editing ? (
-        // edit mode — show all categories with inputs
-        <div className="space-y-3">
+        <div className="space-y-4">
           {CATEGORIES.filter(cat => cat !== "Income" && cat !== "Transfer").map(cat => (
-            <div key={cat} className="flex items-center justify-between
-                                      py-3 border-b border-gray-800">
-              <span className="text-gray-300 text-sm w-48">{cat}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-sm">$</span>
+            <div key={cat} className="flex items-center justify-between border-b border-gray-900 pb-4">
+              <span className="text-xs text-gray-500 uppercase tracking-widest w-48">{cat}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-600">$</span>
                 <input
                   type="number"
                   min="0"
@@ -170,45 +163,40 @@ function BudgetTracker({ startDate, endDate }) {
                     ...editValues,
                     [cat]: e.target.value
                   })}
-                  className="w-32 px-3 py-2 rounded-xl bg-gray-800 border
-                             border-gray-700 text-white text-sm
-                             focus:outline-none focus:border-emerald-500
-                             transition-colors"
+                  className="w-32 px-3 py-1.5 bg-gray-900 border border-gray-800
+                             text-white text-xs focus:outline-none
+                             focus:border-emerald-500 transition-colors"
                 />
-                <span className="text-gray-500 text-sm">/ month</span>
+                <span className="text-xs text-gray-600">/ month</span>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        // display mode — show progress bars
-        <div className="space-y-4">
+        <div className="space-y-5">
           {budgets
             .filter(b => b.category !== "Income" && b.category !== "Transfer")
             .map(({ category, budget, spent }) => {
               const ratio = Math.min(spent / budget, 1)
               const status = getStatusText(spent, budget)
               return (
-                <div key={category}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-300">{category}</span>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-medium ${status.color}`}>
-                        {status.text}
-                      </span>
-                      <span className="text-sm text-gray-400">
-                        ${spent.toFixed(2)}
-                        <span className="text-gray-600"> / ${budget.toFixed(2)}</span>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                <div key={category} className="flex items-center gap-4">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider w-36 text-right shrink-0">
+                    {category}
+                  </span>
+                  <div className="flex-1 h-1.5 bg-gray-800">
                     <div
-                      className={`h-full rounded-full transition-all duration-500 
-                                  ${getProgressColor(spent, budget)}`}
+                      className={`h-full transition-all duration-500 ${getProgressColor(spent, budget)}`}
                       style={{ width: `${ratio * 100}%` }}
                     />
                   </div>
+                  <span className={`text-xs w-20 text-right shrink-0 ${status.color}`}>
+                    {status.text}
+                  </span>
+                  <span className="text-xs text-gray-400 w-28 text-right shrink-0">
+                    ${spent.toFixed(2)}
+                    <span className="text-gray-700"> / ${budget.toFixed(2)}</span>
+                  </span>
                 </div>
               )
             })}

@@ -50,63 +50,71 @@ function Chatbot({ startDate, endDate }) {
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col h-96">
+    <div className="flex flex-col h-96">
 
       {/* header */}
-      <div className="px-6 py-4 border-b border-gray-800 flex items-center gap-3">
-        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <h2 className="text-lg font-semibold text-white">Financial Assistant</h2>
-        <span className="text-xs text-gray-500 ml-auto">Powered by Claude AI</span>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-1.5 h-1.5 bg-emerald-400" />
+          <span className="text-xs text-gray-500 uppercase tracking-widest">Online</span>
+        </div>
+        <span className="text-xs text-gray-700 uppercase tracking-widest">
+          Powered by Claude
+        </span>
       </div>
 
       {/* messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2">
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
           >
-            <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl text-sm
+            <span className="text-xs text-gray-700 uppercase tracking-widest mb-1">
+              {msg.role === "user" ? "You" : "Assistant"}
+            </span>
+            <p className={`text-sm max-w-lg leading-relaxed
               ${msg.role === "user"
-                ? "bg-emerald-600 text-white rounded-br-sm"
-                : "bg-gray-800 text-gray-200 rounded-bl-sm"
+                ? "text-emerald-400"
+                : "text-gray-300"
               }`}
             >
               {msg.content}
-            </div>
+            </p>
           </div>
         ))}
         {loading && (
-          <div className="flex justify-start">
-            <div className="bg-gray-800 text-gray-400 px-4 py-2 rounded-2xl rounded-bl-sm text-sm">
-              Thinking...
-            </div>
+          <div className="flex flex-col items-start">
+            <span className="text-xs text-gray-700 uppercase tracking-widest mb-1">
+              Assistant
+            </span>
+            <p className="text-sm text-gray-600">Thinking...</p>
           </div>
         )}
       </div>
 
       {/* input */}
-      <div className="px-6 py-4 border-t border-gray-800 flex gap-3">
+      <div className="flex items-center gap-4 border-t border-gray-800 pt-4">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask about your spending..."
-          className="flex-1 px-4 py-2 rounded-xl bg-gray-800 border border-gray-700
-                     text-white text-sm placeholder-gray-500
+          className="flex-1 bg-transparent border-b border-gray-800 pb-2
+                     text-sm text-white placeholder-gray-700
                      focus:outline-none focus:border-emerald-500 transition-colors"
         />
         <button
           onClick={handleSend}
           disabled={loading || !input.trim()}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all
+          className={`text-xs uppercase tracking-widest transition-colors
             ${loading || !input.trim()
-              ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-              : "bg-emerald-600 hover:bg-emerald-500 text-white"
+              ? "text-gray-700 cursor-not-allowed"
+              : "text-emerald-400 hover:text-emerald-300 cursor-pointer"
             }`}
         >
-          Send
+          Send →
         </button>
       </div>
     </div>

@@ -28,62 +28,62 @@ function Transactions({ startDate, endDate }) {
     )
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-white">Transactions</h2>
-                <span className="text-gray-400 text-sm">{transactions.length} records</span>
-            </div>
-
-            <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
-                <table className="w-full">
-                    <thead>
-                        <tr className="border-b border-gray-800">
-                            <th className="text-left px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
-                            <th className="text-left px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Description</th>
-                            <th className="text-right px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
-                            <th className="text-left px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Category</th>
-                            <th className="text-left px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Type</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-800">
-                        {transactions.map((transaction) => (
-                            <tr
-                                key={transaction.id}
-                                className="hover:bg-gray-800 transition-colors duration-150"
-                            >
-                                <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">
-                                    {new Date(transaction.date).toLocaleDateString("en-CA", {
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric"
-                                    })}
-                                </td>
-                                <td className="px-6 py-4 text-sm text-white max-w-xs truncate">
-                                    {transaction.description}
-                                </td>
-                                <td className={`px-6 py-4 text-sm font-semibold text-right whitespace-nowrap
-                                    ${transaction.transaction_type === "CREDIT"
-                                        ? "text-emerald-400"
-                                        : "text-rose-400"
-                                    }`}>
-                                    {transaction.transaction_type === "CREDIT" ? "+" : "-"}
-                                    ${Math.abs(transaction.amount).toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-[#4E9A6F] border border-gray-700">
-                                        {transaction.category}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-400">
-                                    {transaction.transaction_type}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+    <div className="space-y-6">
+        <div className="flex items-center justify-between">
+            <h2 className="text-xs text-gray-500 uppercase tracking-widest">
+                Transactions
+            </h2>
+            <span className="text-xs text-gray-600">{transactions.length} records</span>
         </div>
-    )
+
+        <table className="w-full">
+            <thead>
+                <tr className="border-b border-gray-800">
+                    <th className="text-left pb-3 text-xs font-medium text-gray-600 uppercase tracking-widest">Date</th>
+                    <th className="text-left pb-3 text-xs font-medium text-gray-600 uppercase tracking-widest">Description</th>
+                    <th className="text-right pb-3 text-xs font-medium text-gray-600 uppercase tracking-widest">Amount</th>
+                    <th className="text-left pb-3 text-xs font-medium text-gray-600 uppercase tracking-widest pl-8">Category</th>
+                    <th className="text-left pb-3 text-xs font-medium text-gray-600 uppercase tracking-widest">Type</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-900">
+                {transactions.map((transaction) => (
+                    <tr
+                        key={transaction.id}
+                        className="hover:bg-gray-900 transition-colors duration-150"
+                    >
+                        <td className="py-3 text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(transaction.date).toLocaleDateString("en-CA", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric"
+                            })}
+                        </td>
+                        <td className="py-3 text-sm text-gray-300 max-w-xs truncate">
+                            {transaction.description}
+                        </td>
+                        <td className={`py-3 text-sm font-medium text-right whitespace-nowrap
+                            ${transaction.transaction_type === "CREDIT"
+                                ? "text-emerald-400"
+                                : "text-gray-400"
+                            }`}>
+                            {transaction.transaction_type === "CREDIT" ? "+" : "-"}
+                            ${Math.abs(transaction.amount).toFixed(2)}
+                        </td>
+                        <td className="py-3 pl-8">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">
+                                {transaction.category}
+                            </span>
+                        </td>
+                        <td className="py-3 text-xs text-gray-600 uppercase tracking-wider">
+                            {transaction.transaction_type}
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
+)
 }
 
 export default Transactions

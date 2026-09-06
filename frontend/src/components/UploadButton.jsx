@@ -33,11 +33,11 @@ function UploadButton() {
 
   return (
     <div className="flex items-center gap-3">
-      <label className="flex items-center gap-2 px-4 py-2 rounded-xl
+      <label className="flex items-center gap-2 px-4 py-2
                         bg-gray-800 border border-gray-700 text-gray-300
                         hover:bg-gray-700 hover:text-white
                         cursor-pointer transition-all duration-200 text-sm">
-        <span>📂</span>
+        <span></span>
         <span>{file ? file.name : "Choose CSV"}</span>
         <input
           type="file"
@@ -53,7 +53,7 @@ function UploadButton() {
       <button
         onClick={handleUpload}
         disabled={loading || !file}
-        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+        className={`px-4 py-2 text-sm font-medium transition-all duration-200
                     ${loading || !file
                       ? "bg-gray-800 text-gray-500 cursor-not-allowed"
                       : "bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"

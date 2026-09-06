@@ -43,73 +43,82 @@ function App() {
       <div className="min-h-screen bg-gray-950 text-white">
 
         {/* navbar */}
-        <nav className="bg-gray-900 border-b border-gray-800 px-8 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-white tracking-tight">
-            <span className="text-[#4E9A6F]">Ana</span>lytics
-          </h1>
-          <div className="flex items-center gap-6">
+        <nav className="border-b border-gray-800 px-8 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-sm font-medium text-white tracking-widest uppercase">
+              BMO Financial Analytics
+            </h1>
+            <p className="text-xs text-gray-600 tracking-widest uppercase mt-0.5">
+              Local Data / BMO
+            </p>
+          </div>
+          <div className="flex items-center gap-8">
             <NavLink
                 to="/"
                 className={({isActive}) =>
                     isActive
-                        ? "text-[#4E9A6F] font-semibold border-b-2 border-[#4E9A6F] pb-1"
-                        : "text-gray-400 hover:text-white transition-colors"
+                        ? "text-xs uppercase tracking-widest text-emerald-400 border-b border-emerald-400 pb-0.5"
+                        : "text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
                 }
             >
               Dashboard
             </NavLink>
             <NavLink
-                to="/transactions"
-                className={({isActive}) =>
-                    isActive
-                        ? "text-[#4E9A6F] font-semibold border-b-2 border-[#4E9A6F] pb-1"
-                        : "text-gray-400 hover:text-white transition-colors"
-                }
+              to="/transactions"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-xs uppercase tracking-widest text-emerald-400 border-b border-emerald-400 pb-0.5"
+                  : "text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              }
             >
               Transactions
             </NavLink>
-            <UploadButton/>
+            <UploadButton />
           </div>
         </nav>
 
-        {/* date filter bar */}
-        <div className="bg-gray-900 border-b border-gray-800 px-8 py-3 flex items-center gap-3">
-          <span className="text-gray-400 text-sm mr-2">Time range:</span>
-          {filterButtons.map(({ label, days }) => (
-            <button
-              key={label}
-              onClick={() => handleFilterChange(days)}
-              className="px-4 py-1.5 rounded-full text-sm font-medium
-                         bg-gray-800 text-gray-300 hover:bg-[#4E9A6F]
-                         hover:text-white transition-all duration-200"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
 
-        {/* page content */}
-        <main className="px-8 py-8">
-          <Routes>
-            <Route path="/" element={
-              <Dashboard
-                startDate={startDate}
-                endDate={endDate}
-                granularity={granularity}
-              />}
-            />
-            <Route path="/transactions" element={
-              <Transactions
-                startDate={startDate}
-                endDate={endDate}
-              />}
-            />
-          </Routes>
-        </main>
+              {/* date filter bar */}
+              <div className="border-b border-gray-800 px-8 py-3 flex items-center gap-6">
+                <span className="text-gray-500 text-xs uppercase tracking-widest">Time Range</span>
+                <span className="text-gray-700">›</span>
+                {filterButtons.map(({label, days}) => (
+                    <button
+                        key={label}
+                        onClick={() => handleFilterChange(days)}
+                        className="text-xs font-medium text-gray-400 hover:text-emerald-400
+                 transition-colors uppercase tracking-widest"
+                    >
+                      {label === "Last 30 days" ? "30D" :
+                          label === "Last 60 days" ? "60D" :
+                              label === "Last 90 days" ? "90D" :
+                                  label === "Last year" ? "1Y" : "ALL"}
+                    </button>
+                ))}
+              </div>
 
-      </div>
+              {/* page content */}
+              <main className="px-8 py-8">
+                <Routes>
+                  <Route path="/" element={
+                    <Dashboard
+                        startDate={startDate}
+                        endDate={endDate}
+                        granularity={granularity}
+                    />}
+                  />
+                  <Route path="/transactions" element={
+                    <Transactions
+                        startDate={startDate}
+                        endDate={endDate}
+                    />}
+                  />
+                </Routes>
+              </main>
+
+          </div>
     </BrowserRouter>
-  )
+)
 }
 
 export default App
