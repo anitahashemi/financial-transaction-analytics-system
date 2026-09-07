@@ -2,6 +2,7 @@ from sqlalchemy import text
 
 def create_tables(engine):
     """Creates all tables if they don't exist. Run once during setup."""
+
     with engine.connect() as connection:
         connection.execute(text("""
             CREATE TABLE IF NOT EXISTS transactions (
@@ -21,6 +22,7 @@ def create_tables(engine):
 
 def create_budget_table(engine):
     """Creates budget table if it doesn't exist"""
+
     with engine.connect() as connection:
         connection.execute(text("""
         CREATE TABLE IF NOT EXISTS budgets (

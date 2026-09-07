@@ -66,7 +66,7 @@ def get_financial_context(engine, start_date=None, end_date=None):
         LIMIT 5
         """), params).fetchall()
 
-        # 5TH Query: budgets with spending
+        # 5th Query: budgets with spending
         budgets = connection.execute(text(f"""
         SELECT b.category, b.amount AS budget,
         ROUND(COALESCE(SUM(ABS(t.amount)), 0)::numeric, 2) AS spent
@@ -111,7 +111,6 @@ def get_financial_context(engine, start_date=None, end_date=None):
                 for row in budgets
             }
         }
-
     return context
 
 
@@ -147,6 +146,7 @@ def build_system_prompt(context):
     - If asked something not in the data, say so honestly
     - Never make up numbers — only use the data provided above"""
 
+
 def get_chat_response(message, conversation_history, engine, client,  start_date=None, end_date=None):
     """
         Main function called by Flask route.
@@ -169,7 +169,7 @@ def get_chat_response(message, conversation_history, engine, client,  start_date
 
     assistant_message = response.content[0].text
 
-    # add Claude's response to history
+    # add Claude's response to history of conversation
     conversation_history.append({
         "role": "assistant",
         "content": assistant_message

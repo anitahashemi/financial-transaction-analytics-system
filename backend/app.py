@@ -89,6 +89,7 @@ def transactions():
         transactions_list = [dict(row._mapping) for row in rows]
     return jsonify(transactions_list), 200
 
+
 @app.route("/analytics/summary", methods=["GET"])
 def get_summary():
     """Returns monthly income, spending and net savings"""
@@ -141,6 +142,7 @@ def get_summary():
     summary["by_category"] = by_category
     return jsonify(summary), 200
 
+
 @app.route("/analytics/trends", methods=["GET"])
 def get_trends():
     """Returns monthly spending totals for trend line chart."""
@@ -184,7 +186,7 @@ def get_trends():
         trends_list = [dict(trend._mapping) for trend in trends]
     return jsonify(trends_list), 200
 
-# Two flask endpoints for bedget
+
 @app.route("/budgets", methods=["GET"])
 def get_budget():
     """Returns all budgets with current spendings"""
@@ -215,6 +217,7 @@ def get_budget():
         budgets = [dict(row._mapping) for row in result.fetchall()]
 
     return jsonify(budgets), 200
+
 
 @app.route("/budgets", methods=["POST"])
 def set_budgets():
@@ -265,7 +268,6 @@ def chat():
 
     conversation_histories[session_id] = updated_history
     return jsonify({"response": response}), 200
-
 
 
 if __name__ == "__main__":

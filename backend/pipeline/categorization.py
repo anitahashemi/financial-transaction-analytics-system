@@ -1,5 +1,3 @@
-import anthropic
-import os
 import json
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
@@ -76,7 +74,7 @@ def categorize_transaction(description, transaction_code, client):
 
     raw = response.content[0].text.strip()
 
-    # remove markdown code blocks if Claude adds them
+    # removing markdown code blocks if Claude adds them
     raw = raw.replace("```json", "").replace("```", "").strip()
 
     try:

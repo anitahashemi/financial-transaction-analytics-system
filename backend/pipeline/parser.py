@@ -3,21 +3,25 @@ import hashlib
 import re
 from pathlib import Path
 def load_raw(file_path):
+    """Load a raw BMO transaction CSV into a DataFrame."""
     df = pd.read_csv(file_path, skiprows=1)
     return df
 
 def rename_drop_columns(df):
+    """Rename transaction columns and remove the card number."""
     df = df.copy()
     df.columns = ['card_number', 'transaction_type', 'date', 'amount', 'description']
     df= df.drop(columns=['card_number'])
     return df
 
 def parse_date(df):
+    """Convert transaction dates to datetime format."""
     df = df.copy()
     df['date'] = pd.to_datetime(df['date'], format="%Y%m%d")
     return df
 
 def clean_description(df):
+    """Normalize whitespace in transaction descriptions."""
     df = df.copy()
     df['description'] = df['description'].str.replace("\xa0", " ", regex=False)
     df['description'] = df['description'].str.replace(r"\s+", " ", regex=True)
@@ -25,16 +29,19 @@ def clean_description(df):
     return df
 
 def extract_transaction_codes(df):
+    """Extract transaction codes from descriptions into a separate column."""
     df = df.copy()
     df["transaction_code"] = df["description"].str.extract(r'^\[([A-Z]+)\]')
     df["description"] = df["description"].str.replace(r'^\[[A-Z]+\]\s*', '', regex=True)
     return df
 
 def generate_fingerprint(date, amount, description):
+    """Generate a SHA-256 fingerprint for a transaction."""
     raw = f"{str(date)}{str(amount)}{str(description)}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 def add_fingerprint(df):
+    """Add a transaction fingerprint to each row."""
     df = df.copy()
     df['fingerprint'] = df.apply(
     lambda row: generate_fingerprint(row["date"], row["amount"], row["description"]),
