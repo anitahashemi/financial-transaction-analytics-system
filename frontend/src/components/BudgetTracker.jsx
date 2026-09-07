@@ -8,7 +8,6 @@ const CATEGORIES = [
   "Savings & Investments", "Other"
 ]
 
-// Returns color based on spending vs budget ratio
 function getProgressColor(spent, budget) {
   const ratio = spent / budget
   if (ratio >= 1) return "bg-[#B97872]"
@@ -30,7 +29,6 @@ function BudgetTracker({ startDate, endDate }) {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
 
-  // fetch budgets with current spending
   const fetchBudgets = async () => {
     try {
       const params = {}
@@ -75,7 +73,6 @@ function BudgetTracker({ startDate, endDate }) {
     setEditing(true)
   }
 
-  // save all budgets that have values
   const handleSave = async () => {
     setSaving(true)
     setMessage("")

@@ -1,7 +1,6 @@
 import { useState } from "react"
 import axios from "axios"
 
-// Handles BMO CSV file selection and upload to Flask backend
 function UploadButton() {
   const [file, setFile] = useState(null)
   const [message, setMessage] = useState("")

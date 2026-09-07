@@ -1,7 +1,6 @@
 import { useState } from "react"
 import axios from "axios"
 
-// AI financial assistant chatbot component
 function Chatbot({ startDate, endDate }) {
   const [messages, setMessages] = useState([
     {

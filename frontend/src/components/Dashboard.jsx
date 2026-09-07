@@ -111,14 +111,12 @@ function Dashboard({ startDate, endDate, granularity }) {
               {item.name}
             </span>
                           <div className="flex-1 h-1.5 bg-gray-800">
-                            <div className="h-full bg-[#6FA879] transition-all duration-500"
+                          <div className="h-full bg-[#6FA879] transition-all duration-500"
                                 style={{width: `${pct}%`}}
-                            />
-                          </div>
-                          <span className="text-xs text-gray-400 w-24 text-right shrink-0">
-              ${item.value.toLocaleString("en-CA", {minimumFractionDigits: 2})}
-            </span></div>
-                    )})}
+                          /></div>
+                          <span className="text-xs text-gray-400 w-24 text-right shrink-0">${item.value.toLocaleString("en-CA", {minimumFractionDigits: 2})}
+            </span>
+                        </div>)})}
             </div>
           </div>
 
